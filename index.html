@@ -1,32 +1,126 @@
-import telebot
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Signals Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d1117;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 400px;
+            margin: 20px auto 0 auto;
+            background: #161b22;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #30363d;
+        }
+        h1 {
+            color: #58a6ff;
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+        .status {
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .signal-box {
+            background: #21262d;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #30363d;
+        }
+        .pair {
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #f0883e;
+        }
+        .action {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-transform: uppercase;
+        }
+        .buy { color: #2ea44f; }
+        .sell { color: #da3633; }
+        .time {
+            font-size: 14px;
+            color: #8b949e;
+        }
+        .btn {
+            background-color: #238636;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background-color: #2ea44f;
+        }
+    </style>
+</head>
+<body>
 
-# Твій робочий токен
-bot = telebot.TeleBot("8606389834:AAEKGEe7HCVdHvcR4x_u1uNfyvHjygzdq3A")
-
-# Робоче посилання на твій додаток в інтернеті
-WEB_APP_URL = "https://picun648.github.io/trading_app/" 
-
-@bot.message_handler(commands=['start'])
-def welcome(message):
-    user_name = message.from_user.first_name
+<div class="container">
+    <h1>Торговые Сигналы</h1>
+    <div class="status">Pocket Option • В режиме реального времени</div>
     
-    welcome_text = (
-        f"Привет, {user_name}! 👋\n\n"
-        f"Добро пожаловать в торговый хаб нового поколения.\n"
-        f"Здесь ты можешь получать точные сигналы для Pocket Option 24/7 без задержек.\n\n"
-        f"Жми на кнопку ниже, чтобы открыть мини-приложение и начать анализ!"
-    )
+    <div class="signal-box">
+        <div class="pair" id="asset-pair">EUR / USD (OTC)</div>
+        <div class="action buy" id="signal-action">ВВЕРХ ↑ (BUY)</div>
+        <div class="time" id="signal-time">Время экспирации: 1 МИНУТА</div>
+    </div>
     
-    markup = InlineKeyboardMarkup()
-    web_app_button = InlineKeyboardButton(
-        text="📈 Получить сигналы (Мини-апп)", 
-        web_app=telebot.types.WebAppInfo(url=WEB_APP_URL)
-    )
-    markup.add(web_app_button)
-    
-    bot.send_message(message.chat.id, welcome_text, reply_markup=markup)
+    <button class="btn" onclick="generateSignal()">ОБНОВИТЬ АНАЛИЗ</button>
+</div>
 
-if name == 'main':
-    print("Бот успешно запущен и готов к работе...")
-    bot.polling(none_stop=True)
+<script>
+    // Ініціалізація Telegram WebApp
+    const tg = window.Telegram.WebApp;
+    tg.expand(); // Розгортаємо на весь екран телефону
+
+    const pairs = ["EUR/USD (OTC)", "GBP/USD (OTC)", "USD/JPY (OTC)", "EUR/JPY (OTC)", "AUD/USD (OTC)"];
+    const actions = [
+        { text: "ВВЕРХ ↑ (BUY)", class: "buy" },
+        { text: "ВНИЗ ↓ (SELL)", class: "sell" }
+    ];
+
+    function generateSignal() {
+        const randomPair = pairs[Math.floor(Math.random() * pairs.length)];
+        const randomAction = actions[Math.floor(Math.random() * actions.length)];
+        
+        const actionEl = document.getElementById("signal-action");
+        
+        document.getElementById("asset-pair").innerText = randomPair;
+        actionEl.innerText = randomAction.text;
+        actionEl.className = "action " + randomAction.class;
+        
+        // Вібрація на телефоні при оновленні сигналу
+        if(tg.HapticFeedback) {
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+    }
+
+    // Перший сигнал при запуску
+    generateSignal();
+</script>
+
+</body>
+</html>
