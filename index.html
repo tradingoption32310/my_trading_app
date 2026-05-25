@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading Signals Mini App</title>
+    <title>Trading Signals PRO</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
@@ -16,7 +16,7 @@
         }
         .container {
             max-width: 400px;
-            margin: 20px auto 0 auto;
+            margin: 10px auto 0 auto;
             background: #161b22;
             padding: 25px;
             border-radius: 15px;
@@ -32,7 +32,22 @@
         .status {
             color: #8b949e;
             font-size: 14px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+        }
+        /* Новий стиль для вибору валютної пари */
+        select.dropdown {
+            width: 100%;
+            padding: 12px;
+            background-color: #0d1117;
+            color: #58a6ff;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            outline: none;
+            cursor: pointer;
         }
         .signal-box {
             background: #21262d;
@@ -40,25 +55,38 @@
             padding: 25px;
             margin-bottom: 25px;
             border: 1px solid #30363d;
+            display: none; /* Спочатку сховано, поки йде аналіз */
         }
         .pair {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: bold;
-            letter-spacing: 1px;
             color: #f0883e;
         }
         .action {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
-            margin: 20px 0;
+            margin: 15px 0;
             text-transform: uppercase;
         }
         .buy { color: #2ea44f; }
         .sell { color: #da3633; }
-        .time {
-            font-size: 14px;
-            color: #8b949e;
+        .time { font-size: 14px; color: #8b949e; }
+        
+        /* Текст завантаження, який блимає */
+        .loading-text {
+            color: #f0883e;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 40px 0;
+            display: none;
+            animation: blink 1.5s infinite;
         }
+        @keyframes blink {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
         .btn {
             background-color: #238636;
             color: white;
@@ -71,55 +99,96 @@
             width: 100%;
             transition: background 0.2s;
         }
-        .btn:hover {
-            background-color: #2ea44f;
-        }
+        .btn:hover { background-color: #2ea44f; }
+        .btn:disabled { background-color: #21262d; color: #8b949e; cursor: not-allowed; border: 1px solid #30363d; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Торговые Сигналы</h1>
-    <div class="status">Pocket Option • В режиме реального времени</div>
+    <h1>PRO Анализатор</h1>
+    <div class="status">Выберите валютную пару:</div>
     
-    <div class="signal-box">
-        <div class="pair" id="asset-pair">EUR / USD (OTC)</div>
-        <div class="action buy" id="signal-action">ВВЕРХ ↑ (BUY)</div>
-        <div class="time" id="signal-time">Время экспирации: 1 МИНУТА</div>
+    <select id="pair-select" class="dropdown" onchange="resetDisplay()">
+        <option value="EUR/USD (OTC)">EUR/USD (OTC)</option>
+        <option value="GBP/USD (OTC)">GBP/USD (OTC)</option>
+        <option value="USD/JPY (OTC)">USD/JPY (OTC)</option>
+        <option value="AUD/USD (OTC)">AUD/USD (OTC)</option>
+        <option value="EUR/JPY (OTC)">EUR/JPY (OTC)</option>
+    </select>
+    
+    <div id="loading" class="loading-text">Идёт сканирование рынка...</div>
+
+    <div class="signal-box" id="signal-box">
+        <div class="pair" id="asset-pair">-</div>
+        <div class="action" id="signal-action">-</div>
+        <div class="time">Время экспирации: 1 МИНУТА</div>
     </div>
     
-    <button class="btn" onclick="generateSignal()">ОБНОВИТЬ АНАЛИЗ</button>
+    <button class="btn" id="main-btn" onclick="startAnalysis()">ПОЛУЧИТЬ СИГНАЛ</button>
 </div>
 
 <script>
-    // Ініціалізація Telegram WebApp
     const tg = window.Telegram.WebApp;
-    tg.expand(); // Розгортаємо на весь екран телефону
+    tg.expand();
+// Сховище для сигналів, щоб вони не мінялися кожну секунду
+    const signalsCache = {};
 
-    const pairs = ["EUR/USD (OTC)", "GBP/USD (OTC)", "USD/JPY (OTC)", "EUR/JPY (OTC)", "AUD/USD (OTC)"];
-    const actions = [
-        { text: "ВВЕРХ ↑ (BUY)", class: "buy" },
-        { text: "ВНИЗ ↓ (SELL)", class: "sell" }
-    ];
-
-    function generateSignal() {
-        const randomPair = pairs[Math.floor(Math.random() * pairs.length)];
-        const randomAction = actions[Math.floor(Math.random() * actions.length)];
-        
-        const actionEl = document.getElementById("signal-action");
-        
-        document.getElementById("asset-pair").innerText = randomPair;
-        actionEl.innerText = randomAction.text;
-        actionEl.className = "action " + randomAction.class;
-        
-        // Вібрація на телефоні при оновленні сигналу
-        if(tg.HapticFeedback) {
-            tg.HapticFeedback.notificationOccurred('success');
-        }
+    // Якщо користувач міняє пару в списку — ховаємо старий сигнал
+    function resetDisplay() {
+        document.getElementById("signal-box").style.display = "none";
     }
 
-    // Перший сигнал при запуску
-    generateSignal();
+    function startAnalysis() {
+        const pair = document.getElementById("pair-select").value;
+        const btn = document.getElementById("main-btn");
+        const box = document.getElementById("signal-box");
+        const loading = document.getElementById("loading");
+
+        // Ховаємо старий результат, вмикаємо завантаження, блокуємо кнопку
+        box.style.display = "none";
+        loading.style.display = "block";
+        btn.disabled = true;
+
+        // Генеруємо випадковий час очікування від 3 до 5 секунд (3000 - 5000 мілісекунд)
+        const waitingTime = Math.floor(Math.random() * 2000) + 3000;
+
+        setTimeout(() => {
+            const now = Date.now();
+            let finalAction;
+
+            // Перевіряємо, чи є вже активний сигнал для цієї пари (діє 60 секунд)
+            if (signalsCache[pair] && signalsCache[pair].expireTime > now) {
+                finalAction = signalsCache[pair].action; // Беремо збережений
+            } else {
+                // Якщо сигналу немає або 60 секунд минуло — створюємо новий
+                const isBuy = Math.random() > 0.5;
+                finalAction = isBuy ? { text: "ВВЕРХ ↑ (BUY)", class: "buy" } : { text: "ВНИЗ ↓ (SELL)", class: "sell" };
+                
+                // Записуємо в пам'ять додатка результат і час його "смерті" (зараз + 60 сек)
+                signalsCache[pair] = {
+                    action: finalAction,
+                    expireTime: now + 60000 
+                };
+            }
+
+            // Виводимо дані на екран
+            document.getElementById("asset-pair").innerText = pair;
+            const actionEl = document.getElementById("signal-action");
+            actionEl.innerText = finalAction.text;
+            actionEl.className = "action " + finalAction.class;
+
+            // Повертаємо інтерфейс до норми
+            loading.style.display = "none";
+            box.style.display = "block";
+            btn.disabled = false;
+
+            // Створюємо вібровідгук на телефоні (якщо відкрито з мобільного)
+            if(tg.HapticFeedback) {
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+        }, waitingTime);
+    }
 </script>
 
 </body>
