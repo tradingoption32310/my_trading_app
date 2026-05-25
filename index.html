@@ -1,0 +1,32 @@
+import telebot
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+# Твій робочий токен
+bot = telebot.TeleBot("8606389834:AAEKGEe7HCVdHvcR4x_u1uNfyvHjygzdq3A")
+
+# Робоче посилання на твій додаток в інтернеті
+WEB_APP_URL = "https://kandinsky-ton.github.io/tg-tradingsignals/" 
+
+@bot.message_handler(commands=['start'])
+def welcome(message):
+    user_name = message.from_user.first_name
+    
+    welcome_text = (
+        f"Привет, {user_name}! 👋\n\n"
+        f"Добро пожаловать в торговый хаб нового поколения.\n"
+        f"Здесь ты можешь получать точные сигналы для Pocket Option 24/7 без задержек.\n\n"
+        f"Жми на кнопку ниже, чтобы открыть мини-приложение и начать анализ!"
+    )
+    
+    markup = InlineKeyboardMarkup()
+    web_app_button = InlineKeyboardButton(
+        text="📈 Получить сигналы (Мини-апп)", 
+        web_app=telebot.types.WebAppInfo(url=WEB_APP_URL)
+    )
+    markup.add(web_app_button)
+    
+    bot.send_message(message.chat.id, welcome_text, reply_markup=markup)
+
+if name == 'main':
+    print("Бот успешно запущен и готов к работе...")
+    bot.polling(none_stop=True)
