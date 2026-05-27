@@ -9,7 +9,7 @@
     <style>
         :root {
             --neon-purple: #9d4edd;
-            --neon-purple-glow: rgba(157, 78, 221, 0.6);
+            --neon-purple-glow: rgba(157, 78, 221, 0.5);
             --neon-green: #22c55e;
             --neon-green-glow: rgba(34, 197, 94, 0.6);
             --neon-red: #ef4444;
@@ -22,77 +22,100 @@
             background: var(--bg-dark); 
             color: white; 
             margin: 0; 
-            padding: 20px; 
+            padding: 15px; 
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
             box-sizing: border-box;
+            min-height: 100vh;
         }
 
-        /* Личный кабинет */
+        /* Панель профиля */
         .card { 
             width: 100%;
             background: rgba(25, 15, 40, 0.6); 
-            border: 2px solid var(--neon-purple);
-            border-radius: 20px; 
-            padding: 15px; 
-            margin-bottom: 20px; 
-            box-shadow: 0 0 20px var(--neon-purple-glow);
+            border: 1px solid var(--neon-purple);
+            border-radius: 18px; 
+            padding: 12px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 0 15px var(--neon-purple-glow);
             backdrop-filter: blur(10px);
             box-sizing: border-box;
         }
 
-        h2 { margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; text-align: center; color: #e2d4f0; }
+        h2 { margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; text-align: center; color: #e2d4f0; }
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-item { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 15px; text-align: center; font-size: 0.85rem; color: #b5a8c4; }
-        .stat-item b { display: block; font-size: 1.1rem; color: #fff; margin-top: 5px; text-shadow: 0 0 8px var(--neon-purple); }
+        .stat-item { background: rgba(255,255,255,0.03); padding: 8px; border-radius: 12px; text-align: center; font-size: 0.8rem; color: #b5a8c4; }
+        .stat-item b { display: block; font-size: 1rem; color: #fff; margin-top: 3px; text-shadow: 0 0 8px var(--neon-purple); }
 
-        .section-title { font-size: 0.9rem; color: #a594b8; text-transform: uppercase; letter-spacing: 1px; margin: 10px 0; font-weight: 500; }
+        .section-title { width: 100%; text-align: left; font-size: 0.85rem; color: #a594b8; text-transform: uppercase; letter-spacing: 1px; margin: 10px 0 5px 0; font-weight: 500; }
 
-        /* Сетка выбора пар */
-        .pairs-container { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        
-        .pair-btn { 
-            padding: 16px; 
-            border-radius: 18px; 
-            background: rgba(30, 15, 50, 0.4); 
-            color: white; 
-            font-weight: 700; 
+        /* Выпадающие списки (Стиль 1-й версии) */
+        .select-input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 15px;
+            background: rgba(30, 15, 50, 0.5);
+            color: white;
+            font-weight: 700;
             font-size: 1rem;
-            cursor: pointer;
-            border: 2px solid var(--neon-purple); 
+            border: 2px solid var(--neon-purple);
             box-shadow: 0 0 10px rgba(157, 78, 221, 0.2);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            cursor: pointer;
+            margin-bottom: 12px;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.3s ease;
+        }
+        .select-input:focus {
+            box-shadow: 0 0 18px var(--neon-purple);
         }
 
-        .pair-btn:hover, .pair-btn:active {
+        /* Живой график TradingView */
+        .chart-container {
+            width: 100%;
+            height: 220px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Главная кнопка */
+        .main-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 15px;
             background: var(--neon-purple);
-            box-shadow: 0 0 20px var(--neon-purple);
-            transform: translateY(-2px);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--neon-purple-glow);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+        .main-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 0 25px var(--neon-purple);
         }
 
-        /* Элемент загрузки (Анализ рынка) */
+        /* Анимация анализа */
         .loader-container {
             display: none;
             flex-direction: column;
             align-items: center;
-            margin: 20px 0;
+            margin: 15px 0;
             opacity: 0;
             transition: opacity 0.4s ease;
         }
-
-        .loader-text {
-            font-size: 1.1rem;
-            color: #fff;
-            text-shadow: 0 0 10px var(--neon-purple);
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
+        .loader-text { font-size: 1rem; color: #fff; text-shadow: 0 0 10px var(--neon-purple); margin-bottom: 10px; }
         .spinner {
-            width: 40px;
-            height: 40px;
+            width: 35px; height: 35px;
             border: 4px solid rgba(157, 78, 221, 0.2);
             border-top: 4px solid var(--neon-purple);
             border-radius: 50%;
@@ -100,47 +123,29 @@
             box-shadow: 0 0 15px var(--neon-purple-glow);
         }
 
-        /* Окно с результатом Сигнала */
+        /* Окно сигнала */
         .signal-window {
             display: none;
             width: 100%;
-            border-radius: 25px;
-            padding: 25px;
+            border-radius: 20px;
+            padding: 20px;
             text-align: center;
             box-sizing: border-box;
             transform: scale(0.8);
             opacity: 0;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: 10px;
         }
-
-        .signal-window.show {
-            display: block;
-            transform: scale(1);
-            opacity: 1;
-        }
-
-        /* Стили для разных направлений */
-        .signal-up {
-            background: rgba(10, 35, 20, 0.7);
-            border: 3px solid var(--neon-green);
-            box-shadow: 0 0 30px var(--neon-green-glow);
-        }
-
-        .signal-down {
-            background: rgba(35, 10, 15, 0.7);
-            border: 3px solid var(--neon-red);
-            box-shadow: 0 0 30px var(--neon-red-glow);
-        }
-
-        .sig-pair { font-size: 1.4rem; font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; }
-        .sig-direction { font-size: 2rem; font-weight: 700; text-transform: uppercase; margin: 10px 0; }
-        .signal-up .sig-direction { color: var(--neon-green); text-shadow: 0 0 15px var(--neon-green); }
-        .signal-down .sig-direction { color: var(--neon-red); text-shadow: 0 0 15px var(--neon-red); }
+        .signal-window.show { display: block; transform: scale(1); opacity: 1; }
+        .signal-up { background: rgba(10, 35, 20, 0.7); border: 2px solid var(--neon-green); box-shadow: 0 0 25px var(--neon-green-glow); }
+        .signal-down { background: rgba(35, 10, 15, 0.7); border: 2px solid var(--neon-red); box-shadow: 0 0 25px var(--neon-red-glow); }
         
-        .sig-info { font-size: 0.9rem; color: #ccc; margin-top: 10px; }
-        .sig-time { font-size: 1.1rem; font-weight: bold; color: #fff; }
+        .sig-pair { font-size: 1.2rem; font-weight: 700; }
+        .sig-direction { font-size: 1.8rem; font-weight: 700; text-transform: uppercase; margin: 5px 0; }
+        .signal-up .sig-direction { color: var(--neon-green); text-shadow: 0 0 12px var(--neon-green); }
+        .signal-down .sig-direction { color: var(--neon-red); text-shadow: 0 0 12px var(--neon-red); }
+        .sig-time { font-size: 1rem; color: #eee; }
 
-        /* Анимации */
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -154,77 +159,113 @@
         </div>
     </div>
 
-    <div class="section-title">Выбор торговой пары:</div>
+    <div class="section-title">Валютная пара:</div>
+    <select class="select-input" id="pairSelect" onchange="updateChart()">
+        <option value="FX:EURUSD">EUR / USD</option>
+        <option value="FX:GBPUSD">GBP / USD</option>
+        <option value="BITSTAMP:BTCUSD">BTC / USD</option>
+        <option value="BITSTAMP:ETHUSD">ETH / USD</option>
+    </select>
 
-    <div class="pairs-container">
-        <button class="pair-btn" onclick="generateSignal('EUR/USD')">EUR/USD</button>
-        <button class="pair-btn" onclick="generateSignal('GBP/USD')">GBP/USD</button>
-        <button class="pair-btn" onclick="generateSignal('BTC/USD')">BTC/USD</button>
-        <button class="pair-btn" onclick="generateSignal('ETH/USD')">ETH/USD</button>
-    </div>
+    <div class="section-title">Время экспирации:</div>
+    <select class="select-input" id="timeSelect">
+        <option value="1 МИНУТА">1 МИНУТА</option>
+        <option value="3 МИНУТЫ" selected>3 МИНУТЫ</option>
+        <option value="5 МИНУТ">5 МИНУТ</option>
+        <option value="15 МИНУТ">15 МИНУТ</option>
+    </select>
+
+    <div class="section-title">Живой график рынка:</div>
+    <div class="chart-container" id="tv-chart">
+        </div>
+
+    <button class="main-btn" onclick="startAnalysis()">Получить сигнал 🚀</button>
 
     <div class="loader-container" id="loader">
-        <div class="loader-text">Анализируем рынок...</div>
+        <div class="loader-text">Сканируем индикаторы...</div>
         <div class="spinner"></div>
     </div>
 
     <div class="signal-window" id="signalWindow">
         <div class="sig-pair" id="targetPair">EUR/USD</div>
         <div class="sig-direction" id="targetDirection">ВВЕРХ ↑</div>
-        <div class="sig-info">Время экспирации: <span class="sig-time">3 МИНУТЫ</span></div>
+        <div class="sig-time">Время: <span id="targetTime" style="font-weight: bold;">3 МИНУТЫ</span></div>
     </div>
 
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        function generateSignal(pair) {
+        let widget = null;
+
+        // Функция обновления графика при смене пары
+        function updateChart() {
+            const selectedPair = document.getElementById('pairSelect').value;
+            
+            widget = new TradingView.widget({
+                "width": "100%",
+                "height": "100%",
+                "symbol": selectedPair,
+                "interval": "1",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "ru",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "hide_side_toolbar": true,
+                "allow_symbol_change": false,
+                "container_id": "tv-chart"
+            });
+        }
+
+        // Запуск анализа рынка
+        function startAnalysis() {
             const loader = document.getElementById('loader');
             const signalWindow = document.getElementById('signalWindow');
+            const pairSelect = document.getElementById('pairSelect');
+            const timeSelect = document.getElementById('timeSelect');
             
-            // Прячем старый сигнал, если он был открыт
             signalWindow.style.display = 'none';
             signalWindow.classList.remove('show');
             
-            // Включаем плавную анимацию загрузки
             loader.style.display = 'flex';
             setTimeout(() => { loader.style.opacity = '1'; }, 50);
 
-            // Имитируем умный ИИ-анализ на 2.5 секунды
+            // Имитация ИИ-анализа индикаторов
             setTimeout(() => {
-                // Плавное скрытие лоадера
                 loader.style.opacity = '0';
                 setTimeout(() => { loader.style.display = 'none'; }, 400);
 
-                // Рандомим направление: ВВЕРХ или ВНИЗ
                 const directions = ['UP', 'DOWN'];
                 const randomDir = directions[Math.floor(Math.random() * directions.length)];
                 
-                const targetPair = document.getElementById('targetPair');
-                const targetDirection = document.getElementById('targetDirection');
-                
-                targetPair.innerText = pair;
+                const currentPairText = pairSelect.options[pairSelect.selectedIndex].text;
+                const currentTimeText = timeSelect.value;
 
-                // Настраиваем неоновые стили окна результатов
-                signalWindow.className = 'signal-window'; // сброс старых классов
+                document.getElementById('targetPair').innerText = currentPairText;
+                document.getElementById('targetTime').innerText = currentTimeText;
+
+                signalWindow.className = 'signal-window';
                 
                 if (randomDir === 'UP') {
                     signalWindow.classList.add('signal-up');
-                    targetDirection.innerText = 'ВВЕРХ ↑';
+                    document.getElementById('targetDirection').innerText = 'ВВЕРХ ↑';
                 } else {
                     signalWindow.classList.add('signal-down');
-                    targetDirection.innerText = 'ВНИЗ ↓';
+                    document.getElementById('targetDirection').innerText = 'ВНИЗ ↓';
                 }
 
-                // Эффектное появление неонового окна
                 signalWindow.style.display = 'block';
-                setTimeout(() => {
-                    signalWindow.classList.add('show');
-                }, 50);
+                setTimeout(() => { signalWindow.classList.add('show'); }, 50);
 
-            }, 2500);
+            }, 2300);
         }
-        
-        // Сообщаем Телеграму, что приложение готово
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
+
+        // Инициализация при старте додатка
+        window.onload = function() {
+            updateChart();
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+        };
     </script>
 </body>
 </html>
