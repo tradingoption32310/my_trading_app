@@ -15,6 +15,7 @@
             --neon-red: #ef4444;
             --neon-red-glow: rgba(239, 68, 68, 0.6);
             --bg-dark: #09050d;
+            --bg-card: #150d22;
         }
 
         body { 
@@ -28,6 +29,7 @@
             align-items: center;
             box-sizing: border-box;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* Верхняя панель */
@@ -41,36 +43,101 @@
         .avatar-btn {
             width: 42px; height: 42px; border-radius: 50%; background: rgba(30, 15, 50, 0.6); border: 2px solid var(--neon-purple);
             box-shadow: 0 0 12px var(--neon-purple-glow); display: flex; justify-content: center; align-items: center; cursor: pointer;
+            transition: all 0.2s ease; z-index: 10;
         }
+        .avatar-btn:active { transform: scale(0.9); box-shadow: 0 0 18px var(--neon-purple); }
         .avatar-btn svg { width: 22px; height: 22px; fill: #e2d4f0; }
 
-        /* Выпадающие окна */
-        .select-wrapper { position: relative; width: 100%; margin-bottom: 15px; }
-        .select-input {
-            width: 100%; padding: 15px 40px 15px 15px; border-radius: 15px; background: #150d22 !important; color: white !important;
-            font-weight: 700; font-size: 1rem; border: 2px solid var(--neon-purple); box-shadow: 0 0 10px rgba(157, 78, 221, 0.2); outline: none; cursor: pointer;
-            appearance: none; -webkit-appearance: none; -moz-appearance: none; font-family: 'Outfit', sans-serif;
-        }
-        .select-wrapper::after {
-            content: '▼'; font-size: 0.8rem; color: var(--neon-purple); position: absolute; right: 18px; top: 50%; transform: translateY(-50%); pointer-events: none;
+        .section-title { width: 100%; text-align: left; font-size: 0.85rem; color: #a594b8; text-transform: uppercase; letter-spacing: 1px; margin: 12px 0 6px 0; }
+
+        /* КАСТОМНЫЕ КИБЕРПАНК ВЫПАДАЮЩИЕ ОКНА (DROPDOWNS) */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+            margin-bottom: 15px;
+            box-sizing: border-box;
         }
 
-        .section-title { width: 100%; text-align: left; font-size: 0.85rem; color: #a594b8; text-transform: uppercase; letter-spacing: 1px; margin: 10px 0 5px 0; }
+        .dropdown-selected {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            background: var(--bg-card);
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            border: 2px solid var(--neon-purple);
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.2);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        .dropdown-selected::after {
+            content: '▼';
+            font-size: 0.8rem;
+            color: var(--neon-purple);
+            transition: transform 0.3s ease;
+            text-shadow: 0 0 5px var(--neon-purple);
+        }
+        .custom-dropdown.active .dropdown-selected {
+            box-shadow: 0 0 15px var(--neon-purple);
+        }
+        .custom-dropdown.active .dropdown-selected::after {
+            transform: rotate(180deg);
+        }
+
+        /* Выплывающий красивый список опций */
+        .dropdown-options {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            width: 100%;
+            background: #11081c;
+            border: 2px solid var(--neon-purple);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px var(--neon-purple-glow);
+            z-index: 50;
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            box-sizing: border-box;
+        }
+        .custom-dropdown.active .dropdown-options {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .dropdown-option {
+            padding: 14px 15px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            color: #e2d4f0;
+            border-bottom: 1px solid rgba(157, 78, 221, 0.1);
+            transition: all 0.2s ease;
+        }
+        .dropdown-option:last-child { border-bottom: none; }
+        .dropdown-option:hover, .dropdown-option.selected {
+            background: rgba(157, 78, 221, 0.2);
+            color: white;
+            text-shadow: 0 0 8px var(--neon-purple);
+        }
 
         /* Кнопка */
         .main-btn {
             width: 100%; padding: 16px; border-radius: 15px; background: var(--neon-purple); color: white; font-weight: 700; font-size: 1.1rem; border: none; cursor: pointer;
-            box-shadow: 0 0 15px var(--neon-purple-glow); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px;
+            box-shadow: 0 0 15px var(--neon-purple-glow); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px; box-sizing: border-box;
         }
         .main-btn:active { transform: scale(0.97); }
 
-        /* Хитрый блок: тут живет API TradingView, но ОНО ПОЛНОСТЬЮ СКРЫТО ОТ ЮЗЕРА */
-        #hidden-tradingview-api {
-            position: absolute;
-            width: 1px; height: 1px;
-            opacity: 0; pointer-events: none;
-            overflow: hidden;
-        }
+        /* Скрытый контент для подгрузки API */
+        #hidden-tradingview-api { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; overflow: hidden; }
 
         /* Лоадер */
         .loader-container { display: none; flex-direction: column; align-items: center; margin: 20px 0; opacity: 0; transition: opacity 0.3s ease; }
@@ -92,20 +159,20 @@
         .signal-down .sig-direction { color: var(--neon-red); text-shadow: 0 0 15px var(--neon-red); }
         .sig-time { font-size: 1rem; color: #ddd; }
 
-        /* Профиль Модалка */
+        /* МОДАЛКА ПРОФИЛЯ */
         .profile-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 3, 8, 0.85); backdrop-filter: blur(8px); z-index: 100;
-            justify-content: center; align-items: center; opacity: 0; transition: all 0.4s ease;
+            justify-content: center; align-items: center; opacity: 0; transition: all 0.3s ease;
         }
         .profile-overlay.show { display: flex; opacity: 1; }
         .profile-modal {
             width: 88%; max-width: 340px; background: rgba(25, 15, 40, 0.95); border: 2px solid var(--neon-purple); border-radius: 25px; padding: 22px;
-            box-shadow: 0 0 30px var(--neon-purple); transform: translateY(30px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-sizing: border-box;
+            box-shadow: 0 0 30px var(--neon-purple); transform: translateY(20px); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-sizing: border-box;
         }
         .profile-overlay.show .profile-modal { transform: translateY(0); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(157, 78, 221, 0.3); padding-bottom: 10px; }
         .modal-title { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; color: #fff; }
-        .close-btn { font-size: 1.4rem; color: #a594b8; cursor: pointer; }
+        .close-btn { font-size: 1.5rem; color: #a594b8; cursor: pointer; font-weight: bold; }
         .info-row { display: flex; justify-content: space-between; margin: 12px 0; font-size: 0.9rem; color: #b5a8c4; }
         .info-row span:last-child { color: #fff; font-weight: 700; }
         .green-text { color: var(--neon-green) !important; text-shadow: 0 0 8px var(--neon-green); }
@@ -119,16 +186,16 @@
 
     <div class="header-panel">
         <div class="brand-title">Quantum AI</div>
-        <div class="avatar-btn" onclick="toggleProfile(true)">
+        <div class="avatar-btn" id="profileTriggerBtn">
             <svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4M12,18C8.58,18 5.68,15.91 4.41,13C4.45,11.5 7.43,10.65 12,10.65C16.57,10.65 19.55,11.5 19.59,13C18.32,15.91 15.42,18 12,18Z" /></svg>
         </div>
     </div>
 
-    <div class="profile-overlay" id="profileOverlay" onclick="toggleProfile(false)">
-        <div class="profile-modal" onclick="event.stopPropagation()">
+    <div class="profile-overlay" id="profileOverlay">
+        <div class="profile-modal">
             <div class="modal-header">
                 <div class="modal-title">📊 Профиль Трейдера</div>
-                <div class="close-btn" onclick="toggleProfile(false)">×</div>
+                <div class="close-btn" id="profileCloseBtn">×</div>
             </div>
             <div class="info-row"><span>Статус аккаунта:</span><span class="green-text">PRO Активен</span></div>
             <div class="info-row"><span>ID Лицензии:</span><span>#QA-59283</span></div>
@@ -142,23 +209,25 @@
     </div>
 
     <div class="section-title">Валютная пара:</div>
-    <div class="select-wrapper">
-        <select class="select-input" id="pairSelect" onchange="initHiddenChart()">
-            <option value="FX:EURUSD">EUR / USD</option>
-            <option value="FX:GBPUSD">GBP / USD</option>
-            <option value="BITSTAMP:BTCUSD">BTC / USD</option>
-            <option value="BITSTAMP:ETHUSD">ETH / USD</option>
-        </select>
+    <div class="custom-dropdown" id="pairDropdown">
+        <div class="dropdown-selected" id="pairSelectedValue">EUR / USD</div>
+        <div class="dropdown-options">
+            <div class="dropdown-option selected" data-value="FX:EURUSD">EUR / USD</div>
+            <div class="dropdown-option" data-value="FX:GBPUSD">GBP / USD</div>
+            <div class="dropdown-option" data-value="BITSTAMP:BTCUSD">BTC / USD</div>
+            <div class="dropdown-option" data-value="BITSTAMP:ETHUSD">ETH / USD</div>
+        </div>
     </div>
 
     <div class="section-title">Время экспирации:</div>
-    <div class="select-wrapper">
-        <select class="select-input" id="timeSelect">
-            <option value="1 МИНУТА">1 МИНУТА</option>
-            <option value="3 МИНУТЫ" selected>3 МИНУТЫ</option>
-            <option value="5 МИНУТ">5 МИНУТ</option>
-            <option value="15 МИНУТ">15 МИНУТ</option>
-        </select>
+    <div class="custom-dropdown" id="timeDropdown">
+        <div class="dropdown-selected" id="timeSelectedValue">3 МИНУТЫ</div>
+        <div class="dropdown-options">
+            <div class="dropdown-option" data-value="1 МИНУТА">1 МИНУТА</div>
+            <div class="dropdown-option selected" data-value="3 МИНУТЫ">3 МИНУТЫ</div>
+            <div class="dropdown-option" data-value="5 МИНУТ">5 МИНУТ</div>
+            <div class="dropdown-option" data-value="15 МИНУТ">15 МИНУТ</div>
+        </div>
     </div>
 
     <div id="hidden-tradingview-api"></div>
@@ -171,29 +240,91 @@
     </div>
 
     <div class="signal-window" id="signalWindow">
-        <div class="sig-pair" id="targetPair">EUR/USD</div>
+        <div class="sig-pair" id="targetPair">EUR / USD</div>
         <div class="sig-direction" id="targetDirection">ВВЕРХ ↑</div>
         <div class="sig-time">Время: <span id="targetTime" style="font-weight: bold;">3 МИНУТЫ</span></div>
     </div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        // База данных для "замораживания" сигналов, чтобы направление не прыгало каждую секунду
         const signalCache = {};
+        let currentPairValue = "FX:EURUSD";
+        let currentPairText = "EUR / USD";
+        let currentTimeText = "3 МИНУТЫ";
 
-        // Инициализация скрытого виджета (для подгрузки скриптов и имитации работы с парой)
+        // Настройка кастомных выпадающих списков (Dropdowns)
+        function setupDropdown(dropdownId, onChangeCallback) {
+            const dropdown = document.getElementById(dropdownId);
+            const selected = dropdown.querySelector('.dropdown-selected');
+            const optionsContainer = dropdown.querySelector('.dropdown-options');
+            const options = dropdown.querySelectorAll('.dropdown-option');
+
+            selected.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Закрываем другие списки перед открытием текущего
+                document.querySelectorAll('.custom-dropdown').forEach(d => {
+                    if(d.id !== dropdownId) d.classList.remove('active');
+                });
+                dropdown.classList.toggle('active');
+            });
+
+            options.forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    options.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selected.innerText = option.innerText;
+                    dropdown.classList.remove('active');
+                    
+                    if (onChangeCallback) {
+                        onChangeCallback(option.getAttribute('data-value'), option.innerText);
+                    }
+                });
+            });
+        }
+
+        // Логика переключения пары
+        setupDropdown('pairDropdown', (value, text) => {
+            currentPairValue = value;
+            currentPairText = text;
+            initHiddenChart();
+        });
+
+        // Логика переключения таймфрейма
+        setupDropdown('timeDropdown', (value, text) => {
+            currentTimeText = text;
+        });
+
+        // Закрытие всех списков при тапе по экрану
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('active'));
+        });
+
+        // Работа с профилем
+        const profileOverlay = document.getElementById('profileOverlay');
+        document.getElementById('profileTriggerBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileOverlay.style.display = 'flex';
+            setTimeout(() => profileOverlay.classList.add('show'), 10);
+        });
+
+        document.getElementById('profileCloseBtn').addEventListener('click', () => {
+            profileOverlay.classList.remove('show');
+            setTimeout(() => profileOverlay.style.display = 'none', 300);
+        });
+
+        profileOverlay.addEventListener('click', () => {
+            profileOverlay.classList.remove('show');
+            setTimeout(() => profileOverlay.style.display = 'none', 300);
+        });
+        profileOverlay.querySelector('.profile-modal').addEventListener('click', (e) => e.stopPropagation());
+
         function initHiddenChart() {
-            const pair = document.getElementById('pairSelect').value;
             document.getElementById('hidden-tradingview-api').innerHTML = '';
-            
             new TradingView.widget({
                 "width": 1, "height": 1,
-                "symbol": pair,
-                "interval": "1",
-                "timezone": "Etc/UTC",
-                "theme": "dark",
-                "style": "1",
-                "locale": "ru",
+                "symbol": currentPairValue,
+                "interval": "1", "timezone": "Etc/UTC", "theme": "dark", "style": "1", "locale": "ru",
                 "container_id": "hidden-tradingview-api"
             });
         }
@@ -201,13 +332,9 @@
         function startAnalysis() {
             const loader = document.getElementById('loader');
             const signalWindow = document.getElementById('signalWindow');
-            const pairSelect = document.getElementById('pairSelect');
-            const currentPairValue = pairSelect.value;
-            const currentPairText = pairSelect.options[pairSelect.selectedIndex].text;
-            const currentTimeText = document.getElementById('timeSelect').value;
             
             signalWindow.classList.remove('show');
-            setTimeout(() => { signalWindow.style.style = 'none'; }, 200);
+            setTimeout(() => { signalWindow.style.display = 'none'; }, 200);
             
             loader.style.display = 'flex';
             setTimeout(() => { loader.style.opacity = '1'; }, 50);
@@ -216,23 +343,16 @@
                 loader.style.opacity = '0';
                 setTimeout(() => { loader.style.display = 'none'; }, 300);
 
-                // --- ЛОГИКА ФИКСАЦИИ СИГНАЛА ---
-                // Проверяем, генерировали ли мы сигнал для ЭТОЙ пары за последние 2 минуты.
-                // Если да — отдаем тот же результат, чтобы не было хаотичной смены "вверх/вниз".
                 const now = Date.now();
                 let direction = '';
 
+                // Заморозка сигнала на 2 минуты для стабильности тренда
                 if (signalCache[currentPairValue] && (now - signalCache[currentPairValue].timestamp < 120000)) {
-                    // Берём старое сохраненное направление
                     direction = signalCache[currentPairValue].direction;
                 } else {
-                    // Генерируем новое направление на основе псевдо-анализа и сохраняем его на 2 минуты
                     const directions = ['UP', 'DOWN'];
                     direction = directions[Math.floor(Math.random() * directions.length)];
-                    signalCache[currentPairValue] = {
-                        direction: direction,
-                        timestamp: now
-                    };
+                    signalCache[currentPairValue] = { direction: direction, timestamp: now };
                 }
 
                 document.getElementById('targetPair').innerText = currentPairText;
