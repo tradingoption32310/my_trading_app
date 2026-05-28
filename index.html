@@ -32,7 +32,6 @@
             overflow-x: hidden;
         }
 
-        /* Верхняя панель */
         .header-panel {
             width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
         }
@@ -50,7 +49,7 @@
 
         .section-title { width: 100%; text-align: left; font-size: 0.85rem; color: #a594b8; text-transform: uppercase; letter-spacing: 1px; margin: 12px 0 6px 0; }
 
-        /* КАСТОМНЫЕ КИБЕРПАНК ВЫПАДАЮЩИЕ ОКНА (DROPDOWNS) */
+        /* КАСТОМНЫЕ DROPDOWNS С ПЛАВНОЙ АНИМАЦИЕЙ */
         .custom-dropdown {
             position: relative;
             width: 100%;
@@ -73,13 +72,13 @@
             justify-content: space-between;
             align-items: center;
             box-sizing: border-box;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .dropdown-selected::after {
             content: '▼';
             font-size: 0.8rem;
             color: var(--neon-purple);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-shadow: 0 0 5px var(--neon-purple);
         }
         .custom-dropdown.active .dropdown-selected {
@@ -89,44 +88,56 @@
             transform: rotate(180deg);
         }
 
-        /* Выплывающий красивый список опций */
+        /* Выплывающий список с blur эффектом и мягкой анимацией */
         .dropdown-options {
             position: absolute;
-            top: calc(100% + 6px);
+            top: calc(100% + 8px);
             left: 0;
             width: 100%;
-            background: #11081c;
+            background: rgba(17, 8, 28, 0.95);
+            backdrop-filter: blur(10px);
             border: 2px solid var(--neon-purple);
             border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px var(--neon-purple-glow);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px var(--neon-purple-glow);
             z-index: 50;
-            max-height: 250px;
+            max-height: 220px;
             overflow-y: auto;
-            display: none;
+            
+            /* Скрытое состояние для плавной анимации */
+            visibility: hidden;
             opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateY(-12px) scale(0.97);
+            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.25s;
             box-sizing: border-box;
         }
+        
+        /* Активное состояние анимации */
         .custom-dropdown.active .dropdown-options {
-            display: block;
+            visibility: visible;
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
+
+        /* Кастомизация скроллбара списка */
+        .dropdown-options::-webkit-scrollbar { width: 6px; }
+        .dropdown-options::-webkit-scrollbar-track { background: transparent; }
+        .dropdown-options::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; }
+
         .dropdown-option {
             padding: 14px 15px;
             font-weight: 500;
             font-size: 0.95rem;
             cursor: pointer;
             color: #e2d4f0;
-            border-bottom: 1px solid rgba(157, 78, 221, 0.1);
+            border-bottom: 1px solid rgba(157, 78, 221, 0.08);
             transition: all 0.2s ease;
         }
         .dropdown-option:last-child { border-bottom: none; }
         .dropdown-option:hover, .dropdown-option.selected {
-            background: rgba(157, 78, 221, 0.2);
+            background: rgba(157, 78, 221, 0.25);
             color: white;
             text-shadow: 0 0 8px var(--neon-purple);
+            padding-left: 20px; /* Эффект смещения при ховере */
         }
 
         /* Кнопка */
@@ -136,7 +147,6 @@
         }
         .main-btn:active { transform: scale(0.97); }
 
-        /* Скрытый контент для подгрузки API */
         #hidden-tradingview-api { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; overflow: hidden; }
 
         /* Лоадер */
@@ -191,6 +201,7 @@
         </div>
     </div>
 
+    <!-- МОДАЛКА ПРОФИЛЯ -->
     <div class="profile-overlay" id="profileOverlay">
         <div class="profile-modal">
             <div class="modal-header">
@@ -199,8 +210,8 @@
             </div>
             <div class="info-row"><span>Статус аккаунта:</span><span class="green-text">PRO Активен</span></div>
             <div class="info-row"><span>ID Лицензии:</span><span>#QA-59283</span></div>
-            <div class="info-row"><span>Дата подключения:</span><span>27.05.2026</span></div>
-            <div class="info-row"><span>Запросов за сегодня:</span><span class="purple-text">24 / Безлимит</span></div>
+            <div class="info-row"><span>Дата подключения:</span><span>28.05.2026</span></div>
+            <div class="info-row"><span>Запросов за сегодня:</span><span class="purple-text">31 / Безлимит</span></div>
             <div class="info-row"><span>Сервер анализа:</span><span>London-01 (Online)</span></div>
             <div class="disclaimer">
                 ⚠️ **Уведомление:** Алгоритм совершает глубокий математический анализ индикаторов, но рынок изменчив. Софт создан как умный помощник, а не стопроцентная кнопка «бабло». Распределяйте баланс с умом.
@@ -208,25 +219,33 @@
         </div>
     </div>
 
+    <!-- СПИСОК ИЗ 10 ЧИСТЫХ ВАЛЮТНЫХ ПАР (БЕЗ КРИПТЫ) -->
     <div class="section-title">Валютная пара:</div>
     <div class="custom-dropdown" id="pairDropdown">
         <div class="dropdown-selected" id="pairSelectedValue">EUR / USD</div>
         <div class="dropdown-options">
             <div class="dropdown-option selected" data-value="FX:EURUSD">EUR / USD</div>
             <div class="dropdown-option" data-value="FX:GBPUSD">GBP / USD</div>
-            <div class="dropdown-option" data-value="BITSTAMP:BTCUSD">BTC / USD</div>
-            <div class="dropdown-option" data-value="BITSTAMP:ETHUSD">ETH / USD</div>
+            <div class="dropdown-option" data-value="FX:USDJPY">USD / JPY</div>
+            <div class="dropdown-option" data-value="FX:AUDUSD">AUD / USD</div>
+            <div class="dropdown-option" data-value="FX:USDCAD">USD / CAD</div>
+            <div class="dropdown-option" data-value="FX:USDCHF">USD / CHF</div>
+            <div class="dropdown-option" data-value="FX:EURGBP">EUR / GBP</div>
+            <div class="dropdown-option" data-value="FX:EURJPY">EUR / JPY</div>
+            <div class="dropdown-option" data-value="FX:GBPJPY">GBP / JPY</div>
+            <div class="dropdown-option" data-value="FX:NZDUSD">NZD / USD</div>
         </div>
     </div>
 
+    <!-- ТАЙМФРЕЙМЫ С ТЕХНИЧЕСКИМИ МАРКЕРАМИ ИНТЕРВАЛОВ -->
     <div class="section-title">Время экспирации:</div>
     <div class="custom-dropdown" id="timeDropdown">
         <div class="dropdown-selected" id="timeSelectedValue">3 МИНУТЫ</div>
         <div class="dropdown-options">
-            <div class="dropdown-option" data-value="1 МИНУТА">1 МИНУТА</div>
-            <div class="dropdown-option selected" data-value="3 МИНУТЫ">3 МИНУТЫ</div>
-            <div class="dropdown-option" data-value="5 МИНУТ">5 МИНУТ</div>
-            <div class="dropdown-option" data-value="15 МИНУТ">15 МИНУТ</div>
+            <div class="dropdown-option" data-value="1" data-text="1 МИНУТА">1 МИНУТА</div>
+            <div class="dropdown-option selected" data-value="3" data-text="3 МИНУТЫ">3 МИНУТЫ</div>
+            <div class="dropdown-option" data-value="5" data-text="5 МИНУТ">5 МИНУТ</div>
+            <div class="dropdown-option" data-value="15" data-text="15 МИНУТ">15 МИНУТ</div>
         </div>
     </div>
 
@@ -247,21 +266,24 @@
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
+        // Кеш теперь хранит сигналы в формате: "ПАРА_ТАЙМФРЕЙМ"
         const signalCache = {};
+        
         let currentPairValue = "FX:EURUSD";
         let currentPairText = "EUR / USD";
-        let currentTimeText = "3 МИНУТЫ";
+        
+        let currentTimeInterval = "3"; // Внутренний интервал для TradingView API
+        let currentTimeText = "3 МИНУТЫ"; // Текст для вывода юзеру
 
-        // Настройка кастомных выпадающих списков (Dropdowns)
+        // Настройка выпадающих списков с плавной анимацией
         function setupDropdown(dropdownId, onChangeCallback) {
             const dropdown = document.getElementById(dropdownId);
             const selected = dropdown.querySelector('.dropdown-selected');
-            const optionsContainer = dropdown.querySelector('.dropdown-options');
+            const optionsBlock = dropdown.querySelector('.dropdown-options');
             const options = dropdown.querySelectorAll('.dropdown-option');
 
             selected.addEventListener('click', (e) => {
                 e.stopPropagation();
-                // Закрываем другие списки перед открытием текущего
                 document.querySelectorAll('.custom-dropdown').forEach(d => {
                     if(d.id !== dropdownId) d.classList.remove('active');
                 });
@@ -277,30 +299,34 @@
                     dropdown.classList.remove('active');
                     
                     if (onChangeCallback) {
-                        onChangeCallback(option.getAttribute('data-value'), option.innerText);
+                        // Передаем техническое значение и красивый текст
+                        const val = option.getAttribute('data-value');
+                        const txt = option.getAttribute('data-text') || option.innerText;
+                        onChangeCallback(val, txt);
                     }
                 });
             });
         }
 
-        // Логика переключения пары
+        // Логика пары
         setupDropdown('pairDropdown', (value, text) => {
             currentPairValue = value;
             currentPairText = text;
             initHiddenChart();
         });
 
-        // Логика переключения таймфрейма
+        // Логика таймфрейма (теперь меняет интервал симуляции!)
         setupDropdown('timeDropdown', (value, text) => {
+            currentTimeInterval = value;
             currentTimeText = text;
+            initHiddenChart(); // Переинициализируем график под новый таймфрейм
         });
 
-        // Закрытие всех списков при тапе по экрану
         document.addEventListener('click', () => {
             document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('active'));
         });
 
-        // Работа с профилем
+        // Модалка профиля
         const profileOverlay = document.getElementById('profileOverlay');
         document.getElementById('profileTriggerBtn').addEventListener('click', (e) => {
             e.stopPropagation();
@@ -319,12 +345,14 @@
         });
         profileOverlay.querySelector('.profile-modal').addEventListener('click', (e) => e.stopPropagation());
 
+        // Загрузка виджета ТВ с учетом выбранного таймфрейма!
         function initHiddenChart() {
             document.getElementById('hidden-tradingview-api').innerHTML = '';
             new TradingView.widget({
                 "width": 1, "height": 1,
                 "symbol": currentPairValue,
-                "interval": "1", "timezone": "Etc/UTC", "theme": "dark", "style": "1", "locale": "ru",
+                "interval": currentTimeInterval, // Теперь интервал динамический (1, 3, 5, 15)
+                "timezone": "Etc/UTC", "theme": "dark", "style": "1", "locale": "ru",
                 "container_id": "hidden-tradingview-api"
             });
         }
@@ -345,14 +373,17 @@
 
                 const now = Date.now();
                 let direction = '';
+                
+                // Уникальный ключ кеша для пары И таймфрейма (например: "FX:EURUSD_1")
+                const cacheKey = `${currentPairValue}_${currentTimeInterval}`;
 
-                // Заморозка сигнала на 2 минуты для стабильности тренда
-                if (signalCache[currentPairValue] && (now - signalCache[currentPairValue].timestamp < 120000)) {
-                    direction = signalCache[currentPairValue].direction;
+                // Заморозка на 2 минуты конкретной связки пара+таймфрейм
+                if (signalCache[cacheKey] && (now - signalCache[cacheKey].timestamp < 120000)) {
+                    direction = signalCache[cacheKey].direction;
                 } else {
                     const directions = ['UP', 'DOWN'];
                     direction = directions[Math.floor(Math.random() * directions.length)];
-                    signalCache[currentPairValue] = { direction: direction, timestamp: now };
+                    signalCache[cacheKey] = { direction: direction, timestamp: now };
                 }
 
                 document.getElementById('targetPair').innerText = currentPairText;
